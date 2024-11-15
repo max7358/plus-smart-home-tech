@@ -7,12 +7,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class LightSensorEvent extends SensorEvent {
-    private int linkQuality;
-    private int luminosity;
+public class TemperatureSensorEvent extends SensorEvent {
+    private int temperatureC;
+    private int temperatureF;
 
     @Override
     public SensorEventType getType() {
-        return SensorEventType.LIGHT_SENSOR_EVENT;
+        return SensorEventType.TEMPERATURE_SENSOR_EVENT;
     }
 }

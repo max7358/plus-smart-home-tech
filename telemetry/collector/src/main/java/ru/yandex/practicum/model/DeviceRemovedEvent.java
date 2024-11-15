@@ -7,11 +7,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString(callSuper = true)
-public class SwitchSensorEvent extends SensorEvent {
-    private boolean state;
+public class DeviceRemovedEvent extends HubEvent {
+    private String id;
 
     @Override
-    public SensorEventType getType() {
-        return SensorEventType.SWITCH_SENSOR_EVENT;
+    public HubEventType getType() {
+        return HubEventType.DEVICE_REMOVED;
     }
 }
