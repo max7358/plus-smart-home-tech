@@ -1,15 +1,20 @@
 package ru.yandex.practicum.service;
 
-import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.errors.SerializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.config.KafkaProperties;
 import ru.yandex.practicum.mapper.*;
 import ru.yandex.practicum.model.*;
 
+import java.util.concurrent.Future;
+
+@Slf4j
 @Service
 public class KafkaProducerService {
 
@@ -25,12 +30,20 @@ public class KafkaProducerService {
     }
 
     public void sendSensorEvent(SensorEvent event) {
-        sendMessage(topicSensors, convertSensorEvent(event));
+        sendMessage(topicSensors, event.getHubId(), convertSensorEvent(event));
     }
 
-    private void sendMessage(String topic, SpecificRecordBase recordBase) {
-
-        kafkaProducer.send(new ProducerRecord<>(topic, recordBase));
+    private void sendMessage(String topic, String id, SpecificRecordBase recordBase) {
+        try {
+            Future<RecordMetadata> send = kafkaProducer.send(new ProducerRecord<>(topic, id, recordBase));
+            if (send.isDone()) {
+                send.resultNow();
+            }
+        } catch (SerializationException e) {
+            log.error("Message serialization failed: {}", e.getMessage());
+        } catch (IllegalStateException e) {
+            log.error("Message send failed: {}", e.getMessage());
+        }
     }
 
     private SpecificRecordBase convertSensorEvent(SensorEvent event) {
@@ -72,7 +85,7 @@ public class KafkaProducerService {
         }
     }
 
-    public void sendHubEvent(@Valid HubEvent event) {
-        sendMessage(topicHubs, convertHubEvent(event));
+    public void sendHubEvent(HubEvent event) {
+        sendMessage(topicHubs, event.getHubId(), convertHubEvent(event));
     }
 }
