@@ -16,3 +16,7 @@ logging:
   level:
     ru.yandex.practicum: TRACE
     org.apache.kafka: ERROR
+
+grpc:
+  server:
+    port: 9090
