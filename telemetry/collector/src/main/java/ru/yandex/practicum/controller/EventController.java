@@ -18,6 +18,7 @@ public class EventController {
 
     KafkaProducerService kafkaProducerService;
 
+    @Autowired
     public EventController(KafkaProducerService kafkaProducerService) {
         this.kafkaProducerService = kafkaProducerService;
     }
