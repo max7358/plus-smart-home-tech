@@ -3,11 +3,13 @@ package ru.yandex.practicum.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@Builder
 @Entity
 @Table(name = "scenarios", uniqueConstraints = @UniqueConstraint(columnNames = {"hub_id", "name"}))
 public class Scenario {
@@ -20,4 +22,10 @@ public class Scenario {
 
     @Column(name = "name")
     private String name;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Condition> conditions;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Action> actions;
 }

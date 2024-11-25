@@ -1,4 +1,4 @@
-package ru.yandex.practicum;
+package ru.yandex.practicum.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -18,11 +18,13 @@ import java.util.List;
 public class SnapshotProcessor {
     private final Consumer<String, SensorsSnapshotAvro> consumer;
     private final String topicSnapshots;
+    private final SnapshotService snapshotService;
 
     @Autowired
-    SnapshotProcessor(KafkaProperties kafkaProperties) {
+    SnapshotProcessor(KafkaProperties kafkaProperties, SnapshotService snapshotService) {
         this.consumer = kafkaProperties.kafkaSnapshotConsumer();
         this.topicSnapshots = kafkaProperties.getTopicSnapshots();
+        this.snapshotService = snapshotService;
     }
 
 
@@ -34,7 +36,7 @@ public class SnapshotProcessor {
             while (true) {
                 ConsumerRecords<String, SensorsSnapshotAvro> consumerRecords = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, SensorsSnapshotAvro> consumerRecord : consumerRecords) {
-
+                    snapshotService.analyze(consumerRecord.value());
                 }
             }
 
