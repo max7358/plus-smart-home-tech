@@ -9,7 +9,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>Aggregator</artifactId>
+    <artifactId>aggregator</artifactId>
 
     <dependencies>
         <dependency>
