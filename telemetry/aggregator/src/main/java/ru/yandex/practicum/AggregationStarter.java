@@ -112,7 +112,7 @@ public class AggregationStarter {
 
         // Сохраняем обновленный снапшот
         snapshot.put(event.getHubId(), snapshot);
-
+        snapshots.put(event.getHubId(), snapshot);
         return Optional.of(snapshot);
     }
 }
