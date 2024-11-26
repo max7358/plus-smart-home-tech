@@ -58,6 +58,7 @@ public class AggregationStarter {
             while (true) {
                 ConsumerRecords<String, SensorEventAvro> consumerRecords = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, SensorEventAvro> consumerRecord : consumerRecords) {
+                    log.debug("Processing record with key: {}, value: {}", consumerRecord.key(), consumerRecord.value());
                     updateState(consumerRecord.value()).ifPresent(snapshot -> {
                         try {
                             producer.send(new ProducerRecord<>(topicSnapshots, snapshot.getHubId(), snapshot));
@@ -69,11 +70,10 @@ public class AggregationStarter {
             }
 
         } catch (WakeupException ignored) {
-            // игнорируем - закрываем консьюмер и продюсер в блоке finally
+            log.info("Shutdown signal received. Exiting...");
         } catch (Exception e) {
             log.error("Ошибка во время обработки событий от датчиков", e);
         } finally {
-
             try {
                 // Перед тем, как закрыть продюсер и консьюмер, нужно убедиться,
                 // что все сообщения, лежащие в буффере, отправлены и
@@ -83,7 +83,8 @@ public class AggregationStarter {
                 producer.flush();
                 // здесь нужно вызвать метод консьюмера для фиксиции смещений
                 consumer.commitSync();
-
+            } catch (Exception e) {
+                log.error("Error during closing resources", e);
             } finally {
                 log.info("Закрываем консьюмер");
                 consumer.close();

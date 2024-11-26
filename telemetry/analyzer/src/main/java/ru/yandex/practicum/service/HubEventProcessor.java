@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.config.KafkaProperties;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.mapper.ScenarioMapper;
-import ru.yandex.practicum.model.Scenario;
 import ru.yandex.practicum.model.Sensor;
 
 import java.time.Duration;
@@ -23,7 +22,7 @@ public class HubEventProcessor implements Runnable {
     private final Consumer<String, HubEventAvro> consumer;
     private final String topicHubs;
     private final ScenarioService scenarioService;
-    private SensorService sensorService;
+    private final SensorService sensorService;
 
     @Autowired
     HubEventProcessor(KafkaProperties kafkaProperties, SensorService sensorService, ScenarioService scenarioService) {
@@ -55,13 +54,14 @@ public class HubEventProcessor implements Runnable {
                         case ScenarioAddedEventAvro scenarioAddedEventAvro ->
                                 scenarioService.addScenario(ScenarioMapper.fromAvro(hubEventAvro.getHubId(), scenarioAddedEventAvro));
                         case ScenarioRemovedEventAvro scenarioRemovedEventAvro ->
-                                scenarioService.deleteScenario(scenarioRemovedEventAvro.getName());
+                                scenarioService.deleteScenario(hubEventAvro.getHubId(), scenarioRemovedEventAvro.getName());
                         default -> throw new IllegalStateException("Unexpected value: " + hubEventAvro.getPayload());
                     }
 
                 }
             }
         } catch (WakeupException ignored) {
+            log.info("WakeupException caught, shutting down...");
         } catch (Exception e) {
             log.error("Ошибка во время обработки событий от хаба", e);
         } finally {

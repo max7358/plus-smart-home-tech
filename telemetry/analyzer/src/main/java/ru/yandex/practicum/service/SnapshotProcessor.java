@@ -27,26 +27,25 @@ public class SnapshotProcessor {
         this.snapshotService = snapshotService;
     }
 
-
     public void start() {
         try {
             Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
             consumer.subscribe(List.of(topicSnapshots));
-
             while (true) {
                 ConsumerRecords<String, SensorsSnapshotAvro> consumerRecords = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, SensorsSnapshotAvro> consumerRecord : consumerRecords) {
                     snapshotService.analyze(consumerRecord.value());
                 }
             }
-
         } catch (WakeupException ignored) {
+            log.info("WakeupException caught, shutting down...");
         } catch (Exception e) {
             log.error("Ошибка во время обработки событий", e);
         } finally {
             try {
                 consumer.commitSync();
-
+            } catch (Exception e) {
+                log.error("Error committing consumer offsets", e);
             } finally {
                 log.info("Закрываем консьюмер");
                 consumer.close();

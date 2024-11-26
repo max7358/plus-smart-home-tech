@@ -16,7 +16,7 @@ public class ScenarioService {
         scenarioRepository.save(scenario);
     }
 
-    public void deleteScenario(String name) {
-        scenarioRepository.deleteByName(name);
+    public void deleteScenario(String hubId, String name) {
+        scenarioRepository.deleteByHubIdAndName(hubId, name);
     }
 }
