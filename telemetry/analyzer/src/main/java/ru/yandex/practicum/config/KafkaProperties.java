@@ -16,15 +16,15 @@ import java.util.Properties;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties("spring.kafka.consumer")
+@ConfigurationProperties("analyzer.kafka.consumer")
 public class KafkaProperties {
     private Properties snapshotProperties;
     private Properties hubProperties;
 
-    @Value("${spring.kafka.topic.hubs}")
+    @Value("${analyzer.kafka.topic.hubs}")
     String topicHubs;
 
-    @Value("${spring.kafka.topic.snapshots}")
+    @Value("${analyzer.kafka.topic.snapshots}")
     String topicSnapshots;
 
     @Bean

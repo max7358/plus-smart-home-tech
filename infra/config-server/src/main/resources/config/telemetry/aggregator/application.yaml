@@ -1,0 +1,20 @@
+aggregator:
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    topic:
+      sensors: telemetry.sensors.v1
+      snapshots: telemetry.snapshots.v1
+    producer-properties:
+        "bootstrap.servers": ${aggregator.kafka.bootstrap-servers}
+        "key.serializer": org.apache.kafka.common.serialization.StringSerializer
+        "value.serializer": ru.yandex.practicum.serializer.GeneralAvroSerializer
+    consumer-properties:
+        "bootstrap.servers": ${aggregator.kafka.bootstrap-servers}
+        "key.deserializer": org.apache.kafka.common.serialization.StringDeserializer
+        "value.deserializer": ru.yandex.practicum.deserializer.SensorEventDeserializer
+        "group.id": aggregator-group
+
+logging:
+  level:
+    ru.yandex.practicum: TRACE
+    org.apache.kafka: ERROR
