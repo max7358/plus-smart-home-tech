@@ -1,0 +1,17 @@
+logging:
+  level:
+    ru.yandex.practicum: TRACE
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+  sql:
+    init:
+      mode: always
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: 'jdbc:postgresql://localhost:6432/store'
+    username: postgres
+    password: postgres
+server:
+  port: 0
