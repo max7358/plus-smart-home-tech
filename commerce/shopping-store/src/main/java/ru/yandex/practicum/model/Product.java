@@ -14,30 +14,31 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "products")
+@Table(name = "products", schema = "product")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "product_id")
     private UUID productId;
 
-    @Column(nullable = false)
+    @Column(name = "product_name", nullable = false)
     private String productName;
 
     @Column(nullable = false)
     private String description;
 
-    @Column
+    @Column(name = "image_src")
     private String imageSrc;
 
-    @Column(nullable = false)
+    @Column(name = "quantity_state", nullable = false)
     @Enumerated(EnumType.STRING)
     private QuantityState quantityState;
 
-    @Column(nullable = false)
+    @Column(name = "product_state", nullable = false)
     @Enumerated(EnumType.STRING)
     private ProductState productState;
 
-    @Column(nullable = false)
+    @Column(name = "product_category", nullable = false)
     @Enumerated(EnumType.STRING)
     private ProductCategory productCategory;
 

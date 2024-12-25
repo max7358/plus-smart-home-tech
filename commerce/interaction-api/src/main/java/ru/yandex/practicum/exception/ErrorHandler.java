@@ -27,6 +27,19 @@ public class ErrorHandler {
                 .build();
     }
 
+    @ExceptionHandler({BadRequestException.class, NoProductsInShoppingCartException.class,
+            SpecifiedProductAlreadyInWarehouseException.class, NoSpecifiedProductInWarehouseException.class,
+            ProductInShoppingCartLowQuantityInWarehouse.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Error handleBadRequestException(final BadRequestException ex) {
+        return Error.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .reason("Bad request.")
+                .message(ex.getMessage())
+                .timestamp(ZonedDateTime.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT_PATTERN)))
+                .build();
+    }
+
     @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Error handleTypeMismatchException(final MethodArgumentTypeMismatchException ex) {
