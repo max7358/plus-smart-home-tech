@@ -10,7 +10,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "dimesions", schema = "warehouse")
+@Table(name = "dimensions", schema = "dimensions")
 public class Dimension {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
