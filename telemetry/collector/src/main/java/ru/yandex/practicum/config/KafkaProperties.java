@@ -16,14 +16,14 @@ import java.util.Properties;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties("spring.kafka.producer")
+@ConfigurationProperties("collector.kafka.producer")
 public class KafkaProperties {
     private Map<String, String> properties;
 
-    @Value("${spring.kafka.topic.sensors}")
+    @Value("${collector.kafka.topic.sensors}")
     String topicSensors;
 
-    @Value("${spring.kafka.topic.hubs}")
+    @Value("${collector.kafka.topic.hubs}")
     String topicHubs;
 
     private Properties getConfig() {

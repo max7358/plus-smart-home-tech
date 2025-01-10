@@ -19,15 +19,15 @@ import java.util.Properties;
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties("spring.kafka")
+@ConfigurationProperties("aggregator.kafka")
 public class KafkaProperties {
     private Map<String, String> producerProperties;
     private Map<String, String> consumerProperties;
 
-    @Value("${spring.kafka.topic.sensors}")
+    @Value("${aggregator.kafka.topic.sensors}")
     String topicSensors;
 
-    @Value("${spring.kafka.topic.snapshots}")
+    @Value("${aggregator.kafka.topic.snapshots}")
     String topicSnapshots;
 
     private Properties getProducerConfig() {

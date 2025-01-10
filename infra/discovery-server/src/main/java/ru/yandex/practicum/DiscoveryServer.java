@@ -2,12 +2,12 @@ package ru.yandex.practicum;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 
 @SpringBootApplication
-@EnableConfigurationProperties
-public class CollectorApp {
+@EnableEurekaServer
+public class DiscoveryServer {
     public static void main(String[] args) {
-        SpringApplication.run(CollectorApp.class, args);
+        SpringApplication.run(DiscoveryServer.class, args);
     }
 }
