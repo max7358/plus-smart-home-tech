@@ -25,5 +25,6 @@ public class Warehouse {
 
     private double weight;
 
+    @Builder.Default
     private int quantity = 0;
 }
