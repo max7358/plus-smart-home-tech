@@ -11,9 +11,7 @@ import ru.yandex.practicum.model.Warehouse;
 import ru.yandex.practicum.repository.WarehouseRepository;
 
 import java.security.SecureRandom;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,15 +54,44 @@ public class WarehouseService {
         return new AddressDto(CURRENT_ADDRESS, CURRENT_ADDRESS, CURRENT_ADDRESS, CURRENT_ADDRESS, CURRENT_ADDRESS);
     }
 
-    public BookedProductsDto checkQuantity(CartDto cartDto) {
-        List<Warehouse> products = warehouseRepository.findByProductIdIn(cartDto.getProducts().keySet());
+    private List<Warehouse> findProductsById(Set<UUID> productsId) {
+        List<Warehouse> products = warehouseRepository.findByProductIdIn(productsId);
         if (products.isEmpty()) {
             throw new NoSpecifiedProductInWarehouseException("Product not found in warehouse");
         }
+        return products;
+    }
 
+    public BookedProductsDto checkQuantity(CartDto cartDto) {
+        List<Warehouse> products = findProductsById(cartDto.getProducts().keySet());
         BookedProductsDto bookedProductsDto = new BookedProductsDto();
         for (Warehouse product : products) {
             if (product.getQuantity() < cartDto.getProducts().get(product.getProductId())) {
+                throw new ProductInShoppingCartLowQuantityInWarehouse("Product quantity in shopping cart is more than in warehouse");
+            }
+            if (product.isFragile()) {
+                bookedProductsDto.setFragile(true);
+            }
+            bookedProductsDto.setDeliveryVolume(bookedProductsDto.getDeliveryVolume() +
+                    product.getDimension().getHeight() * product.getDimension().getDepth() * product.getDimension().getWidth());
+            bookedProductsDto.setDeliveryWeight(bookedProductsDto.getDeliveryWeight() +
+                    product.getWeight());
+        }
+        return bookedProductsDto;
+    }
+
+    public void returnProducts(Map<UUID, Integer> products) {
+        List<Warehouse> warehouseProducts = findProductsById(products.keySet());
+        warehouseProducts.forEach(warehouseProduct
+                -> warehouseProduct.setQuantity(warehouseProduct.getQuantity() + products.get(warehouseProduct.getProductId())));
+        warehouseRepository.saveAll(warehouseProducts);
+    }
+
+    public BookedProductsDto assembly(AssemblyProductsForOrderRequest request) {
+        List<Warehouse> warehouseProducts = findProductsById(request.getProducts().keySet());
+        BookedProductsDto bookedProductsDto = new BookedProductsDto();
+        for (Warehouse product : warehouseProducts) {
+            if (product.getQuantity() < request.getProducts().get(product.getProductId())) {
                 throw new ProductInShoppingCartLowQuantityInWarehouse("Product quantity in shopping cart is more than in warehouse");
             }
             if (product.isFragile()) {
