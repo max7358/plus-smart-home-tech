@@ -50,4 +50,9 @@ public class WarehouseController implements WarehouseClient {
     public BookedProductsDto assembly(AssemblyProductsForOrderRequest request) {
        return warehouseService.assembly(request);
     }
+
+    @Override
+    public void shipped(ShippedToDeliveryRequest request) {
+        warehouseService.shipped(request);
+    }
 }

@@ -4,10 +4,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.dto.*;
 import ru.yandex.practicum.exception.NoSpecifiedProductInWarehouseException;
+import ru.yandex.practicum.exception.NotFoundException;
 import ru.yandex.practicum.exception.ProductInShoppingCartLowQuantityInWarehouse;
 import ru.yandex.practicum.exception.SpecifiedProductAlreadyInWarehouseException;
 import ru.yandex.practicum.mapper.DimensionMapper;
+import ru.yandex.practicum.model.BookedProduct;
 import ru.yandex.practicum.model.Warehouse;
+import ru.yandex.practicum.repository.BookingRepository;
 import ru.yandex.practicum.repository.WarehouseRepository;
 
 import java.security.SecureRandom;
@@ -22,9 +25,11 @@ public class WarehouseService {
             ADDRESSES[Random.from(new SecureRandom()).nextInt(0, 1)];
 
     private final WarehouseRepository warehouseRepository;
+    private final BookingRepository bookingRepository;
 
-    public WarehouseService(WarehouseRepository warehouseRepository) {
+    public WarehouseService(WarehouseRepository warehouseRepository, BookingRepository bookingRepository) {
         this.warehouseRepository = warehouseRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     @Transactional
@@ -103,5 +108,11 @@ public class WarehouseService {
                     product.getWeight());
         }
         return bookedProductsDto;
+    }
+
+    public void shipped(ShippedToDeliveryRequest request) {
+        BookedProduct bookedProduct = bookingRepository.findByOrderId(request.getOrderId()).orElseThrow(() -> new NotFoundException("Product not found"));
+        bookedProduct.setDeliveryId(request.getDeliveryId());
+        bookingRepository.save(bookedProduct);
     }
 }

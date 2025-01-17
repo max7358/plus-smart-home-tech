@@ -11,7 +11,7 @@ import ru.yandex.practicum.service.OrderService;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/shopping-store")
+@RequestMapping("/api/v1/order")
 @Slf4j
 public class OrderController implements OrderClient {
 
