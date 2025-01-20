@@ -1,5 +1,6 @@
 package ru.yandex.practicum.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.client.OrderClient;
@@ -27,12 +28,12 @@ public class OrderController implements OrderClient {
     }
 
     @Override
-    public OrderDto createOrder(String userName, CreateNewOrderRequest request) {
+    public OrderDto createOrder(String userName, @Valid CreateNewOrderRequest request) {
         return orderService.createOrder(userName, request);
     }
 
     @Override
-    public OrderDto returnOrder(ProductReturnRequest request) {
+    public OrderDto returnOrder(@Valid ProductReturnRequest request) {
         return orderService.returnOrder(request);
     }
 

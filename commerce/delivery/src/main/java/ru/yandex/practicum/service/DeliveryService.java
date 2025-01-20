@@ -1,5 +1,6 @@
 package ru.yandex.practicum.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.client.OrderClient;
@@ -10,20 +11,15 @@ import ru.yandex.practicum.mapper.DeliveryMapper;
 import ru.yandex.practicum.model.Delivery;
 import ru.yandex.practicum.repository.DeliveryRepository;
 
-import java.security.SecureRandom;
-import java.util.Random;
 import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final OrderClient orderClient;
     private final WarehouseClient warehouseClient;
-    private static final String[] ADDRESSES =
-            new String[]{"ADDRESS_1", "ADDRESS_2"};
-    private static final String CURRENT_ADDRESS =
-            ADDRESSES[Random.from(new SecureRandom()).nextInt(0, 1)];
 
     public DeliveryService(DeliveryRepository deliveryRepository, OrderClient orderClient, WarehouseClient warehouseClient) {
         this.deliveryRepository = deliveryRepository;
@@ -43,6 +39,7 @@ public class DeliveryService {
         delivery.setDeliveryState(DeliveryState.DELIVERED);
         orderClient.completeOrder(orderId);
         deliveryRepository.save(delivery);
+        log.info("Delivery for order {} is completed", orderId);
     }
 
     @Transactional
@@ -51,6 +48,7 @@ public class DeliveryService {
         delivery.setDeliveryState(DeliveryState.FAILED);
         orderClient.deliveryFail(orderId);
         deliveryRepository.save(delivery);
+        log.info("Delivery for order {} is failed", orderId);
     }
 
     @Transactional
@@ -62,9 +60,12 @@ public class DeliveryService {
         request.setOrderId(orderId);
         request.setDeliveryId(delivery.getDeliveryId());
         warehouseClient.shipped(request);
+        log.info("Delivery for order {} is picked", orderId);
     }
 
     public Double cost(OrderDto orderDto) {
+        Delivery delivery = deliveryRepository.findByOrderId(orderDto.getOrderId())
+                .orElseThrow(() -> new NoDeliveryFoundException("Delivery not found"));
         double base = 5.0;
         AddressDto address = warehouseClient.getAddress();
         double cost = base;
@@ -73,14 +74,15 @@ public class DeliveryService {
             case "ADDRESS_2" -> cost + cost * 2;
             default -> cost;
         };
-        if(Boolean.TRUE.equals(orderDto.getFragile())){
-            cost = cost + cost*0.2;
+        if (Boolean.TRUE.equals(orderDto.getFragile())) {
+            cost = cost + cost * 0.2;
         }
-        cost = cost + orderDto.getDeliveryWeight()*0.3;
-        cost = cost + orderDto.getDeliveryVolume()*0.2;
-        if(!address.getStreet().equals(CURRENT_ADDRESS)){
-            cost = cost + cost*0.2;
+        cost = cost + orderDto.getDeliveryWeight() * 0.3;
+        cost = cost + orderDto.getDeliveryVolume() * 0.2;
+        if (!address.getStreet().equals(delivery.getToAddress().getStreet())) {
+            cost = cost + cost * 0.2;
         }
+        log.info("Delivery cost for order {} is {}", orderDto.getOrderId(), cost);
         return cost;
     }
 }

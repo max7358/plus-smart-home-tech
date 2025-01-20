@@ -1,5 +1,6 @@
 package ru.yandex.practicum.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,7 @@ public class DeliveryController implements DeliveryClient {
     }
 
     @Override
-    public DeliveryDto createDelivery(DeliveryDto deliveryDto) {
+    public DeliveryDto createDelivery(@Valid DeliveryDto deliveryDto) {
         return deliveryService.createDelivery(deliveryDto);
     }
 
@@ -43,7 +44,7 @@ public class DeliveryController implements DeliveryClient {
     }
 
     @Override
-    public Double cost(OrderDto orderDto) {
+    public Double cost(@Valid OrderDto orderDto) {
         return deliveryService.cost(orderDto);
     }
 }
