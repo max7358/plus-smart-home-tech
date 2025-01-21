@@ -6,6 +6,9 @@ import ru.yandex.practicum.client.WarehouseClient;
 import ru.yandex.practicum.dto.*;
 import ru.yandex.practicum.service.WarehouseService;
 
+import java.util.Map;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/warehouse")
 @Slf4j
@@ -36,5 +39,20 @@ public class WarehouseController implements WarehouseClient {
     @PostMapping("/check")
     public BookedProductsDto checkQuantity(@RequestBody CartDto cart) {
         return warehouseService.checkQuantity(cart);
+    }
+
+    @Override
+    public void returnProducts(Map<UUID, Integer> products) {
+        warehouseService.returnProducts(products);
+    }
+
+    @Override
+    public BookedProductsDto assembly(AssemblyProductsForOrderRequest request) {
+       return warehouseService.assembly(request);
+    }
+
+    @Override
+    public void shipped(ShippedToDeliveryRequest request) {
+        warehouseService.shipped(request);
     }
 }

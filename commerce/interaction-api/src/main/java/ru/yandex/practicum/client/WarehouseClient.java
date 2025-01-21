@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.dto.*;
 
+import java.util.Map;
+import java.util.UUID;
+
 @FeignClient(name = "warehouse", path = "/api/v1/warehouse")
 public interface WarehouseClient {
     @GetMapping("/address")
@@ -20,4 +23,13 @@ public interface WarehouseClient {
 
     @PostMapping("/check")
     BookedProductsDto checkQuantity(@RequestBody CartDto cart);
+
+    @PostMapping("/return")
+    void returnProducts(Map<UUID, Integer> products);
+
+    @PostMapping("/assembly")
+    BookedProductsDto assembly(AssemblyProductsForOrderRequest request);
+
+    @PostMapping("/shipped")
+    void shipped(ShippedToDeliveryRequest request);
 }
