@@ -37,3 +37,4 @@ public class KafkaProperties {
         return new KafkaProducer<>(getConfig());
     }
 }
+
